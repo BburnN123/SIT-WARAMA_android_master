@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Road Safety Assistance</string>
+    <string name="title_activity_main2">Main2Activity</string>
+    <string name="title_home">Home</string>
+    <string name="title_dashboard">Beacons</string>
+    <string name="title_notifications">Info</string>
+</resources>
