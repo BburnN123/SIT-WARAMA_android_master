@@ -122,6 +122,11 @@ public class Main2Activity extends AppCompatActivity {
                     @Override
                     public Unit invoke(ProximityZoneContext context) {
                         notificationsManager.notificationEnterNotify("red");
+                        ConstraintLayout currentLayout = (ConstraintLayout) findViewById(R.id.container);
+                        TextView homeText = (TextView) findViewById(R.id.homeText);
+                        homeText.setText("You are just beside an accident-prone area, please stay safe and take care of your safety!");
+                        currentLayout.setBackgroundColor(Color.RED);
+
                         Log.e("app",  "Entering range of " + red_zone_range);
                         return null;
                     }
@@ -130,6 +135,12 @@ public class Main2Activity extends AppCompatActivity {
                     @Override
                     public Unit invoke(ProximityZoneContext context) {
                         notificationsManager.notificationExitNotify("red");
+
+                        ConstraintLayout currentLayout = (ConstraintLayout) findViewById(R.id.container);
+                        TextView homeText = (TextView) findViewById(R.id.homeText);
+                        homeText.setText("You are just beside an accident-prone area, please stay safe and take care of your safety!");
+                        currentLayout.setBackgroundColor(Color.YELLOW);
+
                         v.vibrate(pattern_yellow_zone, 0);
                         Log.d("app", "Leaving range of " + red_zone_range);
                         return null;
@@ -163,6 +174,10 @@ public class Main2Activity extends AppCompatActivity {
                     @Override
                     public Unit invoke(ProximityZoneContext context) {
                         notificationsManager.notificationEnterNotify("yellow");
+                        ConstraintLayout currentLayout = (ConstraintLayout) findViewById(R.id.container);
+                        TextView homeText = (TextView) findViewById(R.id.homeText);
+                        homeText.setText("You are just beside an accident-prone area, please stay safe and take care of your safety!");
+                        currentLayout.setBackgroundColor(Color.YELLOW);
                         Log.e("app",  "Entering range of " + yellow_zone_range);
                         return null;
                     }
@@ -172,6 +187,13 @@ public class Main2Activity extends AppCompatActivity {
                     public Unit invoke(ProximityZoneContext context) {
                         v.cancel();
                         notificationsManager.notificationExitNotify("yellow");
+
+                        ConstraintLayout currentLayout = (ConstraintLayout) findViewById(R.id.container);
+                        TextView homeText = (TextView) findViewById(R.id.homeText);
+                        homeText.setText("You are just beside an accident-prone area, please stay safe and take care of your safety!");
+                        currentLayout.setBackgroundColor(Color.WHITE);
+
+
                         Log.d("app", "Leaving range of "+ yellow_zone_range);
                         return null;
                     }
@@ -210,7 +232,7 @@ public class Main2Activity extends AppCompatActivity {
                     new Function0<Unit>() {
                         @Override public Unit invoke() {
                             Log.d("app", "requirements fulfilled");
-                            proximityObserver.startObserving(red_zone);
+                            proximityObserver.startObserving(red_zone,yellow_zone);
                             return null;
                         }
                     },
