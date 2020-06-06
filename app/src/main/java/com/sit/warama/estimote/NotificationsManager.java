@@ -1,6 +1,5 @@
 package com.sit.warama.estimote;
 
-import com.sit.warama.*;
 import android.app.Notification;
 import android.app.NotificationChannel;
 
@@ -8,20 +7,10 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.support.v4.app.INotificationSideChannel;
-import android.util.Log;
 
-import com.sit.warama.Main2Activity;
-
-import com.estimote.proximity_sdk.api.ProximityObserver;
-import com.estimote.proximity_sdk.api.ProximityObserverBuilder;
-import com.estimote.proximity_sdk.api.ProximityZone;
-import com.estimote.proximity_sdk.api.ProximityZoneBuilder;
-import com.estimote.proximity_sdk.api.ProximityZoneContext;
+import com.sit.warama.MainActivity;
 
 import androidx.core.app.NotificationCompat;
-import kotlin.Unit;
-import kotlin.jvm.functions.Function1;
 
 
 public class NotificationsManager {
@@ -47,7 +36,7 @@ public class NotificationsManager {
                 .setContentTitle(title)
                 .setContentText(text)
                 .setContentIntent(PendingIntent.getActivity(context, 0,
-                        new Intent(context, Main2Activity.class), PendingIntent.FLAG_UPDATE_CURRENT))
+                        new Intent(context, MainActivity.class), PendingIntent.FLAG_UPDATE_CURRENT))
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .build();
     }
