@@ -7,6 +7,7 @@ import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -65,7 +66,8 @@ public class MainActivity extends AppCompatActivity {
     private String appToken = "afb244ac9a07e1daca2beb29e9662091";
 
     private double red_zone_range = 1.0;
-    private double yellow_zone_range = 3.0;
+    private double yellow_zone_range = 6.0;
+    public boolean in_red = false;
 
     private NotificationsManager notificationsManager;
     @Override
@@ -99,7 +101,6 @@ public class MainActivity extends AppCompatActivity {
         mMainNav.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-
                 switch (item.getItemId()){
 
                     case R.id.nav_home:
@@ -132,6 +133,7 @@ public class MainActivity extends AppCompatActivity {
         //Set up the vibrator
         final Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);  // Get instance of Vibrator from current Context
 
+
         //This is working when it is nearing.
         int dot = 200;          // Length of a Morse Code "dot" in milliseconds
         int dash = 500;         // Length of a Morse Code "dash" in milliseconds
@@ -162,7 +164,8 @@ public class MainActivity extends AppCompatActivity {
                 .onEnter(new Function1<ProximityZoneContext, Unit>() {
                     @Override
                     public Unit invoke(ProximityZoneContext context) {
-                        notificationsManager.notificationEnterNotify("red");
+                     notificationsManager.notificationEnterNotify("red");
+                        in_red = true;
 
                         //Change Main Text
                         TextView mainText = (TextView) findViewById(R.id.homeText);
@@ -195,58 +198,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public Unit invoke(ProximityZoneContext context) {
                         notificationsManager.notificationExitNotify("red");
-
-                        //Change Main Text
-                        TextView mainText = (TextView) findViewById(R.id.homeText);
-                        mainText.setTextColor(Color.parseColor("#F8E648"));
-                        mainText.setText("CAUTION");
-
-                        //Change Text
-                        TextView subText = (TextView) findViewById(R.id.homesubText);
-                        subText.setVisibility(View.VISIBLE);
-                        subText.setText("Approaching Accident Prone Area");
-
-                        //Show Yellow Warning: Yellow color set to visible
-                        FrameLayout coloredFrame = (FrameLayout) findViewById(R.id.coloredFrame);
-                        coloredFrame.setBackgroundColor(Color.parseColor("#F8E648"));
-                        ImageView imageView2 = (ImageView) findViewById(R.id.imageView2);
-                        imageView2.setVisibility(View.INVISIBLE);
-                        ImageView imageView3 = (ImageView) findViewById(R.id.imageView3);
-                        imageView3.setVisibility(View.VISIBLE);
-
-                        v.vibrate(pattern_yellow_zone, 0);
-                        Log.d("app", "Leaving range of " + red_zone_range);
-                        return null;
-                    }
-                })
-                //When one or more beacons is detected
-                .onContextChange(new Function1<Set<? extends ProximityZoneContext>, Unit>() {
-                    @Override
-                    public Unit invoke(Set<? extends ProximityZoneContext> contexts) {
-                        for (ProximityZoneContext proximityContext : contexts) {
-                            String title = proximityContext.getAttachments().get(multi_beacon_key);
-                            if (title != null) {
-                                v.vibrate(pattern_red_zone, 0);
-                                Log.e("app", "You are approaching " + title);
-                            }
-                            else
-                            {
-                                Log.e("app", "None");
-                            }
-                        }
-                        return null;
-                    }
-                })
-                .build();
-
-        //Zone for yellow
-        ProximityZone yellow_zone = new ProximityZoneBuilder()
-                .forTag("multiple--7l9")
-                .inCustomRange(yellow_zone_range)
-                .onEnter(new Function1<ProximityZoneContext, Unit>() {
-                    @Override
-                    public Unit invoke(ProximityZoneContext context) {
-                        notificationsManager.notificationEnterNotify("yellow");
+                        in_red = false;
 
                         //Change Main Text
                         TextView mainText = (TextView) findViewById(R.id.homeText);
@@ -271,6 +223,67 @@ public class MainActivity extends AppCompatActivity {
                         ImageView imageView3 = (ImageView) findViewById(R.id.imageView3);
                         imageView3.setVisibility(View.VISIBLE);
 
+                        Log.d("app", "Leaving range of " + red_zone_range);
+                        return null;
+                    }
+                })
+                //When one or more beacons is detected
+                .onContextChange(new Function1<Set<? extends ProximityZoneContext>, Unit>() {
+                    @Override
+                    public Unit invoke(Set<? extends ProximityZoneContext> contexts) {
+                        for (ProximityZoneContext proximityContext : contexts) {
+                            String title = proximityContext.getAttachments().get(multi_beacon_key);
+                            if (title != null) {
+                                v.vibrate(pattern_red_zone, 0);
+                                in_red = true;
+
+
+                                Log.e("app", "You are approaching " + title);
+                            }
+                            else
+                            {
+                                Log.e("app", "None");
+                            }
+                        }
+                        return null;
+                    }
+                })
+                .build();
+
+        //Zone for yellow
+        ProximityZone yellow_zone = new ProximityZoneBuilder()
+                .forTag("multiple--7l9")
+                .inCustomRange(yellow_zone_range)
+                .onEnter(new Function1<ProximityZoneContext, Unit>() {
+                    @Override
+                    public Unit invoke(ProximityZoneContext context) {
+                        if(!in_red)
+                        {
+                            notificationsManager.notificationEnterNotify("yellow");
+                            //Change Main Text
+                            TextView mainText = (TextView) findViewById(R.id.homeText);
+                            mainText.setTextColor(Color.parseColor("#F8E648"));
+                            mainText.setText("CAUTION");
+
+                            //Change Text
+                            TextView subText = (TextView) findViewById(R.id.homesubText);
+                            subText.setVisibility(View.VISIBLE);
+                            subText.setText("Approaching Accident Prone Area");
+
+                            //Home page image set to invisible
+                            ImageView imageView = (ImageView) findViewById(R.id.imageView);
+                            imageView.setVisibility(View.INVISIBLE);
+
+                            //Show Yellow Warning: Yellow color set to visible
+                            FrameLayout coloredFrame = (FrameLayout) findViewById(R.id.coloredFrame);
+                            coloredFrame.setVisibility(View.VISIBLE);
+                            coloredFrame.setBackgroundColor(Color.parseColor("#F8E648"));
+                            ImageView imageView2 = (ImageView) findViewById(R.id.imageView2);
+                            imageView2.setVisibility(View.INVISIBLE);
+                            ImageView imageView3 = (ImageView) findViewById(R.id.imageView3);
+                            imageView3.setVisibility(View.VISIBLE);
+                        }
+
                         Log.e("app",  "Entering range of " + yellow_zone_range);
                         return null;
                     }
@@ -279,12 +292,6 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public Unit invoke(ProximityZoneContext context) {
                         v.cancel();
-                        notificationsManager.notificationExitNotify("yellow");
-                        
-                        //Home page image set back to visible
-                        ImageView imageView = (ImageView) findViewById(R.id.imageView);
-                        imageView.setVisibility(View.VISIBLE);
-
                         //Colored Frame + logo invisible
                         FrameLayout coloredFrame = (FrameLayout) findViewById(R.id.coloredFrame);
                         coloredFrame.setVisibility(View.INVISIBLE);
@@ -311,7 +318,10 @@ public class MainActivity extends AppCompatActivity {
                         for (ProximityZoneContext proximityContext : contexts) {
                             String title = proximityContext.getAttachments().get(multi_beacon_key);
                             if (title != null) {
-                                v.vibrate(pattern_yellow_zone, 0);
+                                if(!in_red) {
+                                    v.vibrate(pattern_yellow_zone, 0);
+                                }
+
                                 Log.e("app", "You are approaching " + title);
                             }
                             else
@@ -369,6 +379,7 @@ public class MainActivity extends AppCompatActivity {
                         new Function1<List<? extends Requirement>, Unit>() {
                             @Override public Unit invoke(List<? extends Requirement> requirements) {
                                 Log.e("app", "requirements missing: " + requirements);
+
                                 return null;
                             }
                         },
@@ -376,6 +387,7 @@ public class MainActivity extends AppCompatActivity {
                         new Function1<Throwable, Unit>() {
                             @Override public Unit invoke(Throwable throwable) {
                                 Log.e("app", "requirements error: " + throwable);
+
                                 return null;
                             }
                         });

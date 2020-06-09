@@ -3,6 +3,7 @@
     package="com.sit.warama">
 
     <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.BLUETOOTH" android:required="false" />
 
     <application
         android:allowBackup="true"
