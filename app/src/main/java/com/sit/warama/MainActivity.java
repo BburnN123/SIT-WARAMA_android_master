@@ -1,5 +1,7 @@
 package com.sit.warama;
+
 import com.sit.warama.estimote.*;
+import com.sit.warama.account.*;
 
 
 import android.annotation.SuppressLint;
@@ -10,7 +12,9 @@ import android.app.PendingIntent;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
@@ -70,6 +74,9 @@ public class MainActivity extends AppCompatActivity {
     public boolean in_red = false;
 
     private NotificationsManager notificationsManager;
+    private Account account;
+
+    private MediaPlayer mediaPlayer;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -83,7 +90,6 @@ public class MainActivity extends AppCompatActivity {
         infoFragment = new InfoFragment();
 
         setFragment(homeFragment);
-
 
         //Estimote stuff
         EstimoteCloudCredentials cloudCredentials = new EstimoteCloudCredentials(appId, appToken);
@@ -116,7 +122,6 @@ public class MainActivity extends AppCompatActivity {
                     case R.id.nav_info:
                         setFragment(infoFragment);
                         setTitle("Info");
-
                         return true;
 
                     default:
@@ -124,15 +129,18 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+        commit_preference();
+        setup_application_settings();
+
         setUpProximity();
     }
+
 
     //https://github.com/Estimote/Android-Proximity-SDK
     //Set up the different proximity
     public void setUpProximity(){
         //Set up the vibrator
         final Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);  // Get instance of Vibrator from current Context
-
 
         //This is working when it is nearing.
         int dot = 200;          // Length of a Morse Code "dot" in milliseconds
@@ -167,6 +175,12 @@ public class MainActivity extends AppCompatActivity {
                      notificationsManager.notificationEnterNotify("red");
                         in_red = true;
 
+                        MediaPlayer ring= MediaPlayer.create(MainActivity.this,R.raw.firetruck);
+                        ring.setLooping(true);
+                        int maxVolume1 = 100;
+                        ring.setVolume(maxVolume1,maxVolume1); //set volume takes two paramater
+                        ring.start();
+
                         //Change Main Text
                         TextView mainText = (TextView) findViewById(R.id.homeText);
                         mainText.setTextColor(Color.RED);
@@ -199,6 +213,12 @@ public class MainActivity extends AppCompatActivity {
                     public Unit invoke(ProximityZoneContext context) {
                         notificationsManager.notificationExitNotify("red");
                         in_red = false;
+
+                        MediaPlayer ring= MediaPlayer.create(MainActivity.this,R.raw.firetruck);
+                        ring.setLooping(true);
+                        int maxVolume1 = 100;
+                        ring.setVolume(maxVolume1,maxVolume1); //set volume takes two paramater
+                        ring.start();
 
                         //Change Main Text
                         TextView mainText = (TextView) findViewById(R.id.homeText);
@@ -236,8 +256,6 @@ public class MainActivity extends AppCompatActivity {
                             if (title != null) {
                                 v.vibrate(pattern_red_zone, 0);
                                 in_red = true;
-
-
                                 Log.e("app", "You are approaching " + title);
                             }
                             else
@@ -260,6 +278,13 @@ public class MainActivity extends AppCompatActivity {
                         if(!in_red)
                         {
                             notificationsManager.notificationEnterNotify("yellow");
+
+                            MediaPlayer ring= MediaPlayer.create(MainActivity.this,R.raw.firetruck);
+                            ring.setLooping(true);
+                            int maxVolume1 = 100;
+                            ring.setVolume(maxVolume1,maxVolume1); //set volume takes two paramater
+                            ring.start();
+
                             //Change Main Text
                             TextView mainText = (TextView) findViewById(R.id.homeText);
                             mainText.setTextColor(Color.parseColor("#F8E648"));
@@ -292,6 +317,13 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public Unit invoke(ProximityZoneContext context) {
                         v.cancel();
+
+                        MediaPlayer ring= MediaPlayer.create(MainActivity.this,R.raw.firetruck);
+                        ring.setLooping(true);
+                        int maxVolume1 = 100;
+                        ring.setVolume(maxVolume1,maxVolume1); //set volume takes two paramater
+                        ring.start();
+
                         //Colored Frame + logo invisible
                         FrameLayout coloredFrame = (FrameLayout) findViewById(R.id.coloredFrame);
                         coloredFrame.setVisibility(View.INVISIBLE);
@@ -392,4 +424,48 @@ public class MainActivity extends AppCompatActivity {
                             }
                         });
     }
+
+    public void commit_preference()
+    {
+        SharedPreferences sp = getSharedPreferences("Login", MODE_PRIVATE);
+        SharedPreferences.Editor Ed = sp.edit();
+        Ed.putString("name","hello" );
+        Ed.putString("contact","yo");
+        Ed.putString("clinic","sup");
+        Ed.putString("reflex","test");
+        Ed.putString("visual","test");
+        Ed.putString("hearing","weak");
+        Ed.commit();
+    }
+
+
+    public void setup_application_settings()
+    {
+        SharedPreferences sp1 = this.getSharedPreferences("Login", MODE_PRIVATE);
+        String name = sp1.getString("name", "No name defined");//"No name defined" is the default value.
+        account = new Account(getApplicationContext());
+
+        //Get the sound
+        AudioManager audio = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+        int currentVolume = audio.getStreamVolume(AudioManager.STREAM_MUSIC);
+        int maxVolume = audio.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+        float set_volume = 0;
+
+        switch(account.getHearing())
+        {
+            case "weak":
+                set_volume = 1.0f;
+                break;
+            case "adequate":
+                set_volume = 0.7f;
+                break;
+            case "good":
+                set_volume = 0.5f;
+                break;
+        }
+        int volume = (int) (maxVolume*set_volume);
+        audio.setStreamVolume(AudioManager.STREAM_MUSIC, volume, 0);
+    }
+
+
 }
