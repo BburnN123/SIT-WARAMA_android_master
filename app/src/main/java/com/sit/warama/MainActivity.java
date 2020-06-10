@@ -1,29 +1,22 @@
 package com.sit.warama;
 
-import com.sit.warama.estimote.*;
-import com.sit.warama.account.*;
-
-
-import android.annotation.SuppressLint;
-import android.app.Notification;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
 import android.graphics.Color;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.RadioButton;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.estimote.mustard.rx_goodness.rx_requirements_wizard.Requirement;
@@ -35,22 +28,16 @@ import com.estimote.proximity_sdk.api.ProximityZone;
 import com.estimote.proximity_sdk.api.ProximityZoneBuilder;
 import com.estimote.proximity_sdk.api.ProximityZoneContext;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationManagerCompat;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
-import androidx.navigation.ui.AppBarConfiguration;
-import androidx.navigation.ui.NavigationUI;
+import com.sit.warama.account.Account;
+import com.sit.warama.estimote.NotificationsManager;
 
 import java.util.List;
 import java.util.Set;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function0;
 import kotlin.jvm.functions.Function1;
@@ -61,7 +48,6 @@ public class MainActivity extends AppCompatActivity {
     private BottomNavigationView mMainNav;
     private FrameLayout mMainFrame;
     private HomeFragment homeFragment;
-    private BeaconsFragment beaconsFragment;
     private InfoFragment infoFragment;
 
     // 1. Add a property to hold the Proximity Observer
@@ -70,25 +56,22 @@ public class MainActivity extends AppCompatActivity {
     private String appToken = "afb244ac9a07e1daca2beb29e9662091";
 
     private double red_zone_range = 1.0;
-    private double yellow_zone_range = 6.0;
+    private double yellow_zone_range = 3.0;
     public boolean in_red = false;
+
+    Button enterInfo;
 
     private NotificationsManager notificationsManager;
     private Account account;
-
     private MediaPlayer mediaPlayer;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+
         setContentView(R.layout.activity_main);
-
-        mMainFrame = (FrameLayout) findViewById(R.id.main_frame);
-        mMainNav = (BottomNavigationView) findViewById(R.id.main_nav);
-
         homeFragment = new HomeFragment();
-        beaconsFragment = new BeaconsFragment();
-        infoFragment = new InfoFragment();
-
         setFragment(homeFragment);
 
         //Estimote stuff
@@ -103,35 +86,7 @@ public class MainActivity extends AppCompatActivity {
                     return null;
                 }
             }).withBalancedPowerMode().build();
-
-        mMainNav.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                switch (item.getItemId()){
-
-                    case R.id.nav_home:
-                        setFragment(homeFragment);
-                        setTitle("Home");
-                        return true;
-
-                    case R.id.nav_beacons:
-                        setFragment(beaconsFragment);
-                        setTitle("Beacons");
-                        return true;
-
-                    case R.id.nav_info:
-                        setFragment(infoFragment);
-                        setTitle("Info");
-                        return true;
-
-                    default:
-                        return false;
-                }
-            }
-        });
-        commit_preference();
         setup_application_settings();
-
         setUpProximity();
     }
 
@@ -175,30 +130,27 @@ public class MainActivity extends AppCompatActivity {
                      notificationsManager.notificationEnterNotify("red");
                         in_red = true;
 
-                        MediaPlayer ring= MediaPlayer.create(MainActivity.this,R.raw.firetruck);
-                        ring.setLooping(true);
+                        stopPlaying();
+                        mediaPlayer = MediaPlayer.create(MainActivity.this,R.raw.firetruck);
+                        mediaPlayer.setLooping(true);
                         int maxVolume1 = 100;
-                        ring.setVolume(maxVolume1,maxVolume1); //set volume takes two paramater
-                        ring.start();
+                        mediaPlayer.setVolume(maxVolume1,maxVolume1); //set volume takes two paramater
+                        mediaPlayer.start();
 
                         //Change Main Text
                         TextView mainText = (TextView) findViewById(R.id.homeText);
-                        mainText.setTextColor(Color.RED);
+                        mainText.setTextColor(Color.WHITE);
                         mainText.setText("DANGER");
-
-                        //Change Text
-                        TextView subText = (TextView) findViewById(R.id.homesubText);
-                        subText.setVisibility(View.VISIBLE);
-                        subText.setText("Approaching Accident Prone Area");
+                        mainText.setVisibility(View.VISIBLE);
 
                         //Home page image set to invisible
                         ImageView imageView = (ImageView) findViewById(R.id.imageView);
                         imageView.setVisibility(View.INVISIBLE);
-
-                        //Show Red Warning: Red color set to visible
-                        FrameLayout coloredFrame = (FrameLayout) findViewById(R.id.coloredFrame);
-                        coloredFrame.setVisibility(View.VISIBLE);
-                        coloredFrame.setBackgroundColor(Color.RED);
+                        ImageView footprint = (ImageView) findViewById(R.id.footprint);
+                        footprint.setVisibility(View.INVISIBLE);
+                        //Change bg to RED
+                        RelativeLayout coloredFrame = (RelativeLayout) findViewById(R.id.homeLayout);
+                        coloredFrame.setBackgroundColor(Color.parseColor("#BD001A"));
                         ImageView imageView3 = (ImageView) findViewById(R.id.imageView3);
                         imageView3.setVisibility(View.INVISIBLE);
                         ImageView imageView2 = (ImageView) findViewById(R.id.imageView2);
@@ -214,34 +166,36 @@ public class MainActivity extends AppCompatActivity {
                         notificationsManager.notificationExitNotify("red");
                         in_red = false;
 
-                        MediaPlayer ring= MediaPlayer.create(MainActivity.this,R.raw.firetruck);
-                        ring.setLooping(true);
-                        int maxVolume1 = 100;
-                        ring.setVolume(maxVolume1,maxVolume1); //set volume takes two paramater
-                        ring.start();
+                        stopPlaying();
 
+                        mediaPlayer = MediaPlayer.create(MainActivity.this,R.raw.sch_alarm);
+                        mediaPlayer.setLooping(true);
+                        int maxVolume1 = 100;
+
+                        mediaPlayer.setVolume(maxVolume1,maxVolume1); //set volume takes two paramater
+                        mediaPlayer.start();
+
+                        //RED TO ORANGE
                         //Change Main Text
                         TextView mainText = (TextView) findViewById(R.id.homeText);
-                        mainText.setTextColor(Color.parseColor("#F8E648"));
+                        mainText.setTextColor(Color.WHITE);
                         mainText.setText("CAUTION");
-
-                        //Change Text
-                        TextView subText = (TextView) findViewById(R.id.homesubText);
-                        subText.setVisibility(View.VISIBLE);
-                        subText.setText("Approaching Accident Prone Area");
+                        mainText.setVisibility(View.VISIBLE);
 
                         //Home page image set to invisible
                         ImageView imageView = (ImageView) findViewById(R.id.imageView);
                         imageView.setVisibility(View.INVISIBLE);
+                        ImageView footprint = (ImageView) findViewById(R.id.footprint);
+                        footprint.setVisibility(View.INVISIBLE);
 
-                        //Show Yellow Warning: Yellow color set to visible
-                        FrameLayout coloredFrame = (FrameLayout) findViewById(R.id.coloredFrame);
-                        coloredFrame.setVisibility(View.VISIBLE);
-                        coloredFrame.setBackgroundColor(Color.parseColor("#F8E648"));
+                        //Change BG to ORANGE
+                        RelativeLayout coloredFrame = (RelativeLayout) findViewById(R.id.homeLayout);
+                        coloredFrame.setBackgroundColor(Color.parseColor("#FA7705"));
                         ImageView imageView2 = (ImageView) findViewById(R.id.imageView2);
                         imageView2.setVisibility(View.INVISIBLE);
                         ImageView imageView3 = (ImageView) findViewById(R.id.imageView3);
                         imageView3.setVisibility(View.VISIBLE);
+
 
                         Log.d("app", "Leaving range of " + red_zone_range);
                         return null;
@@ -279,30 +233,29 @@ public class MainActivity extends AppCompatActivity {
                         {
                             notificationsManager.notificationEnterNotify("yellow");
 
-                            MediaPlayer ring= MediaPlayer.create(MainActivity.this,R.raw.firetruck);
-                            ring.setLooping(true);
+                            stopPlaying();
+                            mediaPlayer = MediaPlayer.create(MainActivity.this,R.raw.sch_alarm);
+                            mediaPlayer.setLooping(true);
                             int maxVolume1 = 100;
-                            ring.setVolume(maxVolume1,maxVolume1); //set volume takes two paramater
-                            ring.start();
+                            mediaPlayer.setVolume(maxVolume1,maxVolume1); //set volume takes two paramater
+                            mediaPlayer.start();
 
+                             //ORANGE
                             //Change Main Text
                             TextView mainText = (TextView) findViewById(R.id.homeText);
-                            mainText.setTextColor(Color.parseColor("#F8E648"));
+                            mainText.setTextColor(Color.WHITE);
                             mainText.setText("CAUTION");
-
-                            //Change Text
-                            TextView subText = (TextView) findViewById(R.id.homesubText);
-                            subText.setVisibility(View.VISIBLE);
-                            subText.setText("Approaching Accident Prone Area");
+                            mainText.setVisibility(View.VISIBLE);
 
                             //Home page image set to invisible
                             ImageView imageView = (ImageView) findViewById(R.id.imageView);
                             imageView.setVisibility(View.INVISIBLE);
+                            ImageView footprint = (ImageView) findViewById(R.id.footprint);
+                            footprint.setVisibility(View.INVISIBLE);
 
-                            //Show Yellow Warning: Yellow color set to visible
-                            FrameLayout coloredFrame = (FrameLayout) findViewById(R.id.coloredFrame);
-                            coloredFrame.setVisibility(View.VISIBLE);
-                            coloredFrame.setBackgroundColor(Color.parseColor("#F8E648"));
+                            //Change BG to ORANGE
+                            RelativeLayout coloredFrame = (RelativeLayout) findViewById(R.id.homeLayout);
+                            coloredFrame.setBackgroundColor(Color.parseColor("#FA7705"));
                             ImageView imageView2 = (ImageView) findViewById(R.id.imageView2);
                             imageView2.setVisibility(View.INVISIBLE);
                             ImageView imageView3 = (ImageView) findViewById(R.id.imageView3);
@@ -318,27 +271,28 @@ public class MainActivity extends AppCompatActivity {
                     public Unit invoke(ProximityZoneContext context) {
                         v.cancel();
 
-                        MediaPlayer ring= MediaPlayer.create(MainActivity.this,R.raw.firetruck);
-                        ring.setLooping(true);
-                        int maxVolume1 = 100;
-                        ring.setVolume(maxVolume1,maxVolume1); //set volume takes two paramater
-                        ring.start();
+                        stopPlaying();
 
-                        //Colored Frame + logo invisible
-                        FrameLayout coloredFrame = (FrameLayout) findViewById(R.id.coloredFrame);
-                        coloredFrame.setVisibility(View.INVISIBLE);
+                        //ORANGE TO GREEN
+                        //Change BG to green
+                        RelativeLayout coloredFrame = (RelativeLayout) findViewById(R.id.homeLayout);
+                        coloredFrame.setBackgroundColor(Color.parseColor("#00AF50"));
                         ImageView imageView2 = (ImageView) findViewById(R.id.imageView2);
                         imageView2.setVisibility(View.INVISIBLE);
                         ImageView imageView3 = (ImageView) findViewById(R.id.imageView3);
                         imageView3.setVisibility(View.INVISIBLE);
 
-                        //Change Back Main Text
+                        //Change Back Main Text & make maintext invisible
                         TextView mainText = (TextView) findViewById(R.id.homeText);
                         mainText.setTextColor(Color.BLACK);
                         mainText.setText(R.string.homeText);
-                        //Subtext set to invisible
-                        TextView subText = (TextView) findViewById(R.id.homesubText);
-                        subText.setVisibility(View.INVISIBLE);
+                        mainText.setVisibility(View.INVISIBLE);
+
+                        //Make image come back
+                        ImageView imageView = (ImageView) findViewById(R.id.imageView);
+                        imageView.setVisibility(View.VISIBLE);
+                        ImageView footprint = (ImageView) findViewById(R.id.footprint);
+                        footprint.setVisibility(View.VISIBLE);
 
                         Log.d("app", "Leaving range of "+ yellow_zone_range);
                         return null;
@@ -370,13 +324,7 @@ public class MainActivity extends AppCompatActivity {
         this.requestLocationPermission(red_zone,yellow_zone);
     }
 
-    private void setFragment(Fragment fragment) {
-//        FragmentManager fragmentManager = getSupportFragmentManager();
-//        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-//        fragmentTransaction.replace(R.id.main_frame, fragment);
-//        fragmentTransaction.addToBackStack(fragment.toString());
-//        fragmentTransaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-//        fragmentTransaction.commit();
+    protected void setFragment(Fragment fragment) {
         String tag = fragment.getClass().getSimpleName();
         FragmentTransaction tr = getSupportFragmentManager().beginTransaction();
         Fragment curFrag = getSupportFragmentManager().getPrimaryNavigationFragment();
@@ -385,6 +333,7 @@ public class MainActivity extends AppCompatActivity {
             tr.hide(curFrag);
 
         if (cacheFrag == null) {
+            System.out.println("TAGGGGG" + tag);
             tr.add(R.id.main_frame, fragment, tag);
         } else {
             tr.show(cacheFrag);
@@ -411,7 +360,6 @@ public class MainActivity extends AppCompatActivity {
                         new Function1<List<? extends Requirement>, Unit>() {
                             @Override public Unit invoke(List<? extends Requirement> requirements) {
                                 Log.e("app", "requirements missing: " + requirements);
-
                                 return null;
                             }
                         },
@@ -419,23 +367,9 @@ public class MainActivity extends AppCompatActivity {
                         new Function1<Throwable, Unit>() {
                             @Override public Unit invoke(Throwable throwable) {
                                 Log.e("app", "requirements error: " + throwable);
-
                                 return null;
                             }
                         });
-    }
-
-    public void commit_preference()
-    {
-        SharedPreferences sp = getSharedPreferences("Login", MODE_PRIVATE);
-        SharedPreferences.Editor Ed = sp.edit();
-        Ed.putString("name","hello" );
-        Ed.putString("contact","yo");
-        Ed.putString("clinic","sup");
-        Ed.putString("reflex","test");
-        Ed.putString("visual","test");
-        Ed.putString("hearing","weak");
-        Ed.commit();
     }
 
 
@@ -459,12 +393,104 @@ public class MainActivity extends AppCompatActivity {
             case "adequate":
                 set_volume = 0.7f;
                 break;
-            case "good":
-                set_volume = 0.5f;
+            case "strong":
+                set_volume = 0.1f;
                 break;
         }
         int volume = (int) (maxVolume*set_volume);
         audio.setStreamVolume(AudioManager.STREAM_MUSIC, volume, 0);
+    }
+
+    private void stopPlaying() {
+        if (mediaPlayer != null) {
+            mediaPlayer.stop();
+            mediaPlayer.release();
+            mediaPlayer = null;
+        }
+    }
+
+    public void radioReflexClicked(View view)
+    {
+        // Is the button now checked?
+        boolean checked = ((RadioButton) view).isChecked();
+
+        // Check which radio button was clicked
+        switch(view.getId()) {
+            case R.id.firstWeak:
+                if (checked)
+                    account.setReflex("weak");
+                    break;
+            case R.id.firstAdequate:
+                if (checked)
+                    account.setReflex("adequate");
+                    break;
+            case R.id.firstStrong:
+                if (checked)
+                    account.setReflex("strong");
+                    break;
+        }
+    }
+
+    public void radioVisualClicked(View view)
+    {
+        // Is the button now checked?
+        boolean checked = ((RadioButton) view).isChecked();
+
+        // Check which radio button was clicked
+        switch(view.getId()) {
+            case R.id.secondWeak:
+                if (checked)
+                    account.setVisual("weak");
+                    break;
+            case R.id.secondAdequate:
+                if (checked)
+                    account.setVisual("adequate");
+                    break;
+            case R.id.secondStrong:
+                if (checked)
+                    account.setVisual("strong");
+                    break;
+        }
+    }
+
+    public void radioHearingClicked(View view)
+    {
+        // Is the button now checked?
+        boolean checked = ((RadioButton) view).isChecked();
+
+        // Check which radio button was clicked
+        switch(view.getId()) {
+            case R.id.thirdWeak:
+                if (checked)
+                    account.setHearing("weak");
+                    break;
+            case R.id.thirdAdequate:
+                if (checked)
+                    account.setHearing("adequate");
+                    break;
+            case R.id.thirdStrong:
+                if (checked)
+                    account.setHearing("strong");
+                    break;
+        }
+    }
+
+    public void updateInfo(View view)
+    {
+        EditText editName = (EditText) view.findViewById(R.id.editTextPersonName);
+        EditText editNumber = (EditText) view.findViewById(R.id.editTextMobileNumber);
+        EditText editClinic = (EditText) view.findViewById(R.id.editTextClinic);
+
+        SharedPreferences sp = getSharedPreferences("Login", MODE_PRIVATE);
+        SharedPreferences.Editor Ed = sp.edit();
+        Ed.putString("name", editName.getText().toString());
+        Ed.putString("contact",editNumber.getText().toString());
+        Ed.putString("clinic",editClinic.getText().toString());
+
+        Ed.putString("reflex", account.getReflex());
+        Ed.putString("visual", account.getVisual());
+        Ed.putString("hearing", account.getHearing());
+        Ed.commit();
     }
 
 

@@ -4,18 +4,186 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".InfoFragment">
+    tools:context=".InfoFragment"
+    android:id="@+id/infoFragment">
 
-
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="365dp"
-        android:layout_marginLeft="15dp"
-        android:layout_marginTop="40dp"
+    <ImageView
+        android:id="@+id/cancel_action"
+        android:layout_width="50dp"
+        android:layout_height="45dp"
+        android:layout_marginTop="30dp"
         android:layout_marginRight="15dp"
-        android:text="Information: \n This app works with your phone's bluetooth and location features in order to performn beacon scanning. \n\n Home page will flash a RED or YELLOW card depending on how close you are to a known accident-prone hotspot."
-        android:textAlignment="center"
-        android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+        android:layout_gravity="right"
+        android:src="@drawable/ic_cancel" />
+
+    <!--    <TextView-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="365dp"-->
+    <!--        android:layout_marginLeft="15dp"-->
+    <!--        android:layout_marginTop="100dp"-->
+    <!--        android:layout_marginRight="15dp"-->
+    <!--        android:text="Information: \n This app works with your phone's bluetooth and location features in order to performn beacon scanning. \n\n Home page will flash a RED or YELLOW card depending on how close you are to a known accident-prone hotspot."-->
+    <!--        android:textAlignment="center"-->
+    <!--        android:textAppearance="@style/TextAppearance.AppCompat.Large" />-->
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <EditText
+            android:id="@+id/editTextPersonName"
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="90dp"
+            android:ems="10"
+            android:inputType="textPersonName"
+            android:text="@string/name"
+            android:textAlignment="center" />
+
+        <EditText
+            android:id="@+id/editTextMobileNumber"
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:ems="10"
+            android:inputType="number"
+            android:text="@string/mobile_number"
+            android:textAlignment="center" />
+
+        <EditText
+            android:id="@+id/editTextClinic"
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:ems="10"
+            android:inputType="text"
+            android:text="@string/clinic"
+            android:textAlignment="center" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Reflex"
+            android:textSize="20sp"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="-5dp"
+            android:layout_gravity="center_horizontal"
+            />
+        <RadioGroup xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/reflexgroup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_gravity="center_horizontal"
+            >
+            <RadioButton android:id="@+id/firstWeak"
+                android:padding="10dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Weak"
+                android:onClick="radioReflexClicked"/>
+            <RadioButton android:id="@+id/firstAdequate"
+                android:padding="10dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Adequate"
+                android:onClick="radioReflexClicked"/>
+            <RadioButton android:id="@+id/firstStrong"
+                android:padding="10dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Strong"
+                android:onClick="radioReflexClicked"/>
+
+        </RadioGroup>
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Visual"
+            android:textSize="20sp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="-5dp"
+            android:layout_gravity="center_horizontal"
+            />
+        <RadioGroup xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/visualgroup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_gravity="center_horizontal"
+            >
+            <RadioButton android:id="@+id/secondWeak"
+                android:padding="10dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Weak"
+                android:onClick="radioVisualClicked"/>
+            <RadioButton android:id="@+id/secondAdequate"
+                android:padding="10dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Adequate"
+                android:onClick="radioVisualClicked"/>
+            <RadioButton android:id="@+id/secondStrong"
+                android:padding="10dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Strong"
+                android:onClick="radioVisualClicked"/>
+
+        </RadioGroup>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Hearing"
+            android:textSize="20sp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="-5dp"
+            android:layout_gravity="center_horizontal"
+            />
+        <RadioGroup xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/hearinggroup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_gravity="center_horizontal"
+            >
+            <RadioButton android:id="@+id/thirdWeak"
+                android:padding="10dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Weak"
+                android:onClick="radioHearingClicked"/>
+            <RadioButton android:id="@+id/thirdAdequate"
+                android:padding="10dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Adequate"
+                android:onClick="radioHearingClicked"/>
+            <RadioButton android:id="@+id/thirdStrong"
+                android:padding="10dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Strong"
+                android:onClick="radioHearingClicked"/>
+
+        </RadioGroup>
+
+        <Button
+            android:id="@+id/savebutton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="20dp"
+            android:text="SAVE"
+            />
+    </LinearLayout>
+
+
 
 </FrameLayout>

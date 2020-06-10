@@ -1,12 +1,21 @@
 package com.sit.warama;
 
+import com.sit.warama.account.*;
+
+import android.content.Context;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.RadioButton;
+import android.widget.Toast;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -23,9 +32,15 @@ public class InfoFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+    private HomeFragment homeFragment;
+    private Account account;
 
     public InfoFragment() {
         // Required empty public constructor
+    }
+
+    public InfoFragment(Context context) {
+
     }
 
     /**
@@ -59,9 +74,110 @@ public class InfoFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        final View rootView = inflater.inflate(R.layout.fragment_info, container, false);
+
         getActivity().setTitle("Info");
 
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_info, container, false);
+        account = new Account(getActivity().getApplicationContext());
+        homeFragment = new HomeFragment();
+        Button button = (Button) rootView.findViewById(R.id.savebutton);
+        button.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                ((MainActivity)getActivity()).updateInfo(rootView);
+                Toast toast = Toast. makeText(getActivity().getApplicationContext(), "SAVED", Toast. LENGTH_SHORT);
+                toast.show();
+
+            }
+        });
+        ImageView cancel = (ImageView) rootView.findViewById(R.id.cancel_action);
+        cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                 setFragment(homeFragment);
+            }
+        });
+        set_info(rootView);
+
+        return rootView;
+    }
+
+    protected void setFragment(Fragment fragment) {
+        String tag = fragment.getClass().getSimpleName();
+
+        assert getFragmentManager() != null;
+        FragmentTransaction tr = getFragmentManager().beginTransaction();
+        Fragment curFrag = getFragmentManager().getPrimaryNavigationFragment();
+        Fragment cacheFrag = getFragmentManager().findFragmentByTag(tag);
+        if (curFrag != null)
+            tr.hide(curFrag);
+
+        if (cacheFrag == null) {
+            tr.add(R.id.main_frame, fragment, tag);
+        } else {
+            tr.show(cacheFrag);
+            fragment = cacheFrag;
+        }
+        tr.setPrimaryNavigationFragment(fragment);
+        tr.commit();
+    }
+
+    public void set_info( View rootView)
+    {
+        EditText editName = (EditText) rootView.findViewById(R.id.editTextPersonName);
+        EditText editNumber = (EditText) rootView.findViewById(R.id.editTextMobileNumber);
+        EditText editClinic = (EditText) rootView.findViewById(R.id.editTextClinic);
+
+        switch(account.getReflex()){
+            case "weak":
+                RadioButton reflex_radio1 = (RadioButton) rootView.findViewById(R.id.firstWeak);
+                reflex_radio1.setChecked(true);
+                break;
+            case "adequate":
+                RadioButton reflex_radio2 = (RadioButton) rootView.findViewById(R.id.firstAdequate);
+                reflex_radio2.setChecked(true);
+                break;
+            case "strong":
+                RadioButton reflex_radio3 = (RadioButton) rootView.findViewById(R.id.firstStrong);
+                reflex_radio3.setChecked(true);
+                break;
+        }
+
+        switch(account.getVisual()){
+            case "weak":
+                RadioButton reflex_radio1 = (RadioButton) rootView.findViewById(R.id.secondWeak);
+                reflex_radio1.setChecked(true);
+                break;
+            case "adequate":
+                RadioButton reflex_radio2 = (RadioButton) rootView.findViewById(R.id.secondAdequate);
+                reflex_radio2.setChecked(true);
+                break;
+            case "strong":
+                RadioButton reflex_radio3 = (RadioButton) rootView.findViewById(R.id.secondStrong);
+                reflex_radio3.setChecked(true);
+                break;
+        }
+
+        switch(account.getHearing()){
+            case "weak":
+                RadioButton reflex_radio1 = (RadioButton) rootView.findViewById(R.id.thirdWeak);
+                reflex_radio1.setChecked(true);
+                break;
+            case "adequate":
+                RadioButton reflex_radio2 = (RadioButton) rootView.findViewById(R.id.thirdAdequate);
+                reflex_radio2.setChecked(true);
+                break;
+            case "strong":
+                RadioButton reflex_radio3 = (RadioButton) rootView.findViewById(R.id.thirdStrong);
+                reflex_radio3.setChecked(true);
+                break;
+        }
+
+
+        editName.setText(account.getName());
+        editNumber.setText(account.getContact());
+        editClinic.setText(account.getClinic());
     }
 }

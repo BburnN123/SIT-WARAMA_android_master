@@ -7,25 +7,10 @@
     tools:context=".MainActivity">
 
 
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/main_nav"
-        android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
-
-        android:layout_marginStart="0dp"
-        android:layout_marginEnd="0dp"
-        android:layout_marginBottom="0dp"
-        app:itemBackground="@android:color/white"
-        app:menu="@menu/nav_items" />
-
     <FrameLayout
         android:id="@+id/main_frame"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@id/main_nav"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true"

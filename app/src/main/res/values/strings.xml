@@ -1,9 +1,12 @@
 <resources>
-    <string name="app_name">NavBar</string>
+    <string name="app_name">WARMA</string>
     <string name="nav_home">Home</string>
     <string name="nav_beacons">Beacons</string>
     <string name="nav_info">Info</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="homeText">Have a Safe Journey!</string>
+    <string name="mobile_number">Mobile Number</string>
+    <string name="clinic">Clinic</string>
+    <string name="name">Name</string>
 </resources>

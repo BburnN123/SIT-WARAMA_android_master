@@ -1,13 +1,18 @@
 package com.sit.warama;
 
+import android.app.Activity;
+import android.icu.text.IDNA;
 import android.os.Bundle;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -24,6 +29,9 @@ public class HomeFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+
+    private Button enterInfo;
+    private InfoFragment infoFragment;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -63,12 +71,73 @@ public class HomeFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
+        final View rootView = inflater.inflate(R.layout.fragment_home, container, false);
         getActivity().setTitle("Home");
+
+        infoFragment = new InfoFragment();
+//        Fragment curFrag = getFragmentManager().getPrimaryNavigationFragment();
+//        System.out.println("HOME FRAGMENT TAG!!"+ curFrag.getClass().getSimpleName());
+
+
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_home, container, false);
+        enterInfo = (Button) rootView.findViewById(R.id.buttonEnterInfo);
+        enterInfo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setFragment(infoFragment);
+//                Activity activity = getActivity();
+//                if (activity instanceof MainActivity){
+//                    infoFragment = new InfoFragment();
+//                    FragmentTransaction transaction = getFragmentManager().beginTransaction();
+//                    transaction.replace(R.id.infoFragment, infoFragment);
+//                    transaction.commit();
+//                }
+////
+//
+//                    FragmentTransaction fr = getFragmentManager().beginTransaction();
+//
+//
+//                    fr.add(R.id.main_frame, new InfoFragment());
+//                    fr.commit();
+            }
+        });
+
+        return rootView;
 
     }
+//    public void showHideFragment(final Fragment fragment){
+//
+//        FragmentTransaction ft = getFragmentManager().beginTransaction();
+//        ft.setCustomAnimations(android.R.animator.fade_in,
+//                android.R.animator.fade_out);
+//
+//        if (fragment.isHidden()) {
+//            ft.show(fragment);
+//            Log.d("hidden","Show");
+//        } else {
+//            ft.hide(fragment);
+//            Log.d("Shown","Hide");
+//        }
+//
+//        ft.commit();
+//    }
 
+    protected void setFragment(Fragment fragment) {
+        String tag = fragment.getClass().getSimpleName();
 
+        FragmentTransaction tr = getFragmentManager().beginTransaction();
+        Fragment curFrag = getFragmentManager().getPrimaryNavigationFragment();
+        Fragment cacheFrag = getFragmentManager().findFragmentByTag(tag);
+        if (curFrag != null)
+            tr.hide(curFrag);
+
+        if (cacheFrag == null) {
+            tr.add(R.id.main_frame, fragment, tag);
+        } else {
+            tr.show(cacheFrag);
+            fragment = cacheFrag;
+        }
+        tr.setPrimaryNavigationFragment(fragment);
+        tr.commit();
+    }
 }
