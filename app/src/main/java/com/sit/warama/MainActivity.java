@@ -244,8 +244,8 @@ public class MainActivity extends AppCompatActivity {
                             //Change Main Text
                             TextView mainText = (TextView) findViewById(R.id.homeText);
                             mainText.setTextColor(Color.WHITE);
-                            mainText.setText("CAUTION");
-                            mainText.setVisibility(View.VISIBLE);
+//                            mainText.setText("CAUTION");
+//                            mainText.setVisibility(View.VISIBLE);
 
                             //Home page image set to invisible
                             ImageView imageView = (ImageView) findViewById(R.id.imageView);
@@ -385,17 +385,24 @@ public class MainActivity extends AppCompatActivity {
         int maxVolume = audio.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
         float set_volume = 0;
 
-        switch(account.getHearing())
+        if(account.getHearing() == null)
         {
-            case "weak":
-                set_volume = 1.0f;
-                break;
-            case "adequate":
-                set_volume = 0.7f;
-                break;
-            case "strong":
-                set_volume = 0.1f;
-                break;
+            set_volume = 1.0f;
+        }
+        else
+        {
+            switch(account.getHearing())
+            {
+                case "weak":
+                    set_volume = 1.0f;
+                    break;
+                case "adequate":
+                    set_volume = 0.7f;
+                    break;
+                case "strong":
+                    set_volume = 0.1f;
+                    break;
+            }
         }
         int volume = (int) (maxVolume*set_volume);
         audio.setStreamVolume(AudioManager.STREAM_MUSIC, volume, 0);
