@@ -60,7 +60,7 @@
         android:layout_marginBottom="70dp"
         android:adjustViewBounds="true"
         android:scaleType="fitXY"
-        android:src="@drawable/warningblack"
+        android:src="@drawable/warning_pic"
         android:visibility="invisible" />
 
     <ImageView
@@ -74,7 +74,7 @@
         android:layout_marginBottom="70dp"
         android:adjustViewBounds="true"
         android:scaleType="centerCrop"
-        android:src="@drawable/cautionahead2"
+        android:src="@drawable/caution_pic"
         android:visibility="invisible" />
 
     <Button

@@ -140,8 +140,8 @@ public class MainActivity extends AppCompatActivity {
                         //Change Main Text
                         TextView mainText = (TextView) findViewById(R.id.homeText);
                         mainText.setTextColor(Color.WHITE);
-                        mainText.setText("DANGER");
-                        mainText.setVisibility(View.VISIBLE);
+//                        mainText.setText("DANGER");
+//                        mainText.setVisibility(View.VISIBLE);
 
                         //Home page image set to invisible
                         ImageView imageView = (ImageView) findViewById(R.id.imageView);
@@ -179,8 +179,8 @@ public class MainActivity extends AppCompatActivity {
                         //Change Main Text
                         TextView mainText = (TextView) findViewById(R.id.homeText);
                         mainText.setTextColor(Color.WHITE);
-                        mainText.setText("CAUTION");
-                        mainText.setVisibility(View.VISIBLE);
+//                        mainText.setText("CAUTION");
+//                        mainText.setVisibility(View.VISIBLE);
 
                         //Home page image set to invisible
                         ImageView imageView = (ImageView) findViewById(R.id.imageView);
