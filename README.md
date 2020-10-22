@@ -16,9 +16,7 @@ l.	Assessing and analyzing:
  b)	Road: when an older adult approach a pedestrian crossing, WARMA will analyze the direction and speed of the older adults and whether the older adult is approaching the "red zone (i.e., warning zone)" or the "green zone (safety zone)."
   
  c)	Mobility behavior: WARMA application also collects location information of the older adult for their daily routine activities. By analyzing the data collected, the application will be able to provide "pre-trip" advice for the older adult before he/she starts their journey.
-  
+
 2.	Warning: when our system detects the older adult is approaching the red zone to a certain distance, the mobile phone will vibrate and make sound alert to notify the older people to stop walking to that direction.
-
 3.	Assisting: our system can guide and direct the older adult to the nearest intersection as well as to cross the intersection safely.
-
 4.	Reminding: while the older adult is crossing the intersection, our system will remind the older adults to look out for motorist while crossing.
