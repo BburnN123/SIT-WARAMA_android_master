@@ -4,7 +4,7 @@ SIT Project warama_android
 
 # Key features of WARMA are:
 
-l.	Assessing and analyzing:
+l.	Assessing and analyzing
 
 2.	Warning: when our system detects the older adult is approaching the red zone to a certain distance, the mobile phone will vibrate and make sound alert to notify the older people to stop walking to that direction.
 
