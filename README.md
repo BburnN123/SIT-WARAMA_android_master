@@ -4,6 +4,7 @@ SIT Project warama_android
 
 # Key features of WARMA are:
 l.	Assessing and analyzing:
+  
   a)	Personal profile: we will borrow the concept from the existing tool "Road Master Test Kit" which allows the older adults to 	assess their eyesight, hearing and reaction time in self-administered paper-based tests. We will digitalize these tests with
 	 WARMA. WARMA initial assessments will be categorized into three domains: perception (e.g., vision, hearing and vibration sense), 	 general physical function and cognitive function. The sensory perception, physical functions, and cognitive functions are the
 	primary factors that may influence the ability and safely for the older adults when crossing the road. Based on the results of
